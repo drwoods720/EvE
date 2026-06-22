@@ -5,7 +5,7 @@
 import os
 import src.run as run
 
-title = """
+title: str = r'''
  _____      _____
 |  ___|    |  ___|
 | |____   _| |__
@@ -13,7 +13,7 @@ title = """
 | |___\ V /| |___
 \____(_)_(_)____/
 (EvE)aluates Various modEls
-"""
+'''
 
 def setInputDirectory() -> str:
     while True:
@@ -27,7 +27,7 @@ def setInputDirectory() -> str:
             return user_input
         else:
             print(f"Invalid directory {user_input} entered!")
-            input()
+            _ = input()
 
 def setThreading() -> bool:
     while True:
@@ -46,6 +46,12 @@ def setThreading() -> bool:
 
 
 def mainMenu(title: str) -> None:
+    """
+    Main menu to control the program
+
+    Parameters:
+        title: Main logo to display
+    """
     input_directory: str = ""
     multithreading: bool = False
 
@@ -70,12 +76,12 @@ def mainMenu(title: str) -> None:
             else:
                 print("No input directory set!")
             print("Press enter key to continue...")
-            input()
+            _ = input()
         elif selection_lower == "i":
             input_directory = setInputDirectory()
             print(f"input directory set to {input_directory}")
             print("Press enter to continue")
-            input()
+            _ = input()
         elif selection_lower == "m":
             multithreading = setThreading()
         # Small easter egg
