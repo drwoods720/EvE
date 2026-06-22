@@ -82,24 +82,23 @@ def importData(root_path: str, multithreaded: bool):
     # Find mask files (files ending in ".tif")
     mask_files: list[Path] = list(root.rglob("*.tif"))
 
-    if not multithreaded:
-        with alive_bar(len(mask_files), title="Importing files") as bar:
+    with alive_bar(len(mask_files), title="Importing files") as bar:
+        if not multithreaded:
             for mask in mask_files:
                 jobs.extend(importDataset(mask, root))
                 bar()
-    else:
-        with ThreadPoolExecutor() as executor:
-            futures = [
-                executor.submit(importDataset, file, root)
-                for file in mask_files
-            ]
+            else:
+                with ThreadPoolExecutor() as executor:
+                    futures = [
+                        executor.submit(importDataset, file, root)
+                        for file in mask_files
+                    ]
 
-            with alive_bar(len(futures), title="Importing files") as bar:
-                for future in as_completed(futures):
-                    try:
-                        jobs.extend(future.result())
-                    except Exception as e:
-                        print("Failed to import dataset", e)
-                    finally:
-                        bar()
+                    for future in as_completed(futures):
+                        try:
+                            jobs.extend(future.result())
+                        except Exception as e:
+                            print("Failed to import dataset", e)
+                        finally:
+                            bar()
     return jobs

@@ -45,15 +45,14 @@ def processData(datasets: list[dt.Comparison], multithreaded: bool) -> None:
         datasets: List of datasets to process
         multithreaded: Whether or not paralell processing should be enabled
     """
-    if not multithreaded:
-        with alive_bar(len(datasets), title="Processing data") as bar:
+    with alive_bar(len(datasets), title="Processing data") as bar:
+        if not multithreaded:
             for dataset in datasets:
                 processJob(dataset)
                 bar()
-    else:
-        with ProcessPoolExecutor() as pool:
-            futures = [pool.submit(processJob, dataset) for dataset in datasets]
+            else:
+                with ProcessPoolExecutor() as pool:
+                    futures = [pool.submit(processJob, dataset) for dataset in datasets]
 
-            with alive_bar(len(datasets), title="Processing data") as bar:
-                for future in as_completed(futures):
-                    bar()
+                    for future in as_completed(futures):
+                        bar()

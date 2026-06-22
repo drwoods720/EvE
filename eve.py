@@ -91,7 +91,6 @@ def mainMenu(title: str) -> None:
             print(f"Unknown option {selection}")
             print("Please try again")
 
-
     print("Thank you, please come again!")
 
 def main():

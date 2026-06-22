@@ -1,4 +1,4 @@
-1. Parse name of user who placed points - DO THIS NEXT <-
+1. Parse name of user who placed points - DO THIS NEXT
 2. Add more detailed inline documentation - DOING
 3. Rename some modules / classes to be more clear - STARTED ON IT (Do this last)
-4. Begin port to latest python version
+4. Begin migration to latest python version - NOT STARTED <-
