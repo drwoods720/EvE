@@ -3,7 +3,7 @@
 import numpy as np
 import numpy.typing as npt
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 
 from src.datatypes import Cell, Metadata, Point, Results, SampleArea
@@ -26,7 +26,7 @@ class Comparison:
     mask: npt.NDArray[np.uint16]
     sample_area: SampleArea
     original_image: Optional[npt.NDArray[np.uint16]] = None
-    results: Results = Results()
+    results: Results = field(default_factory=Results)
 
     def __post_init__(self) -> None:
         # Sets the original_image value to an all black image the same shape as the mask if none is provided.

@@ -86,7 +86,6 @@ def importData(root_path: str, multithreaded: bool):
         if not multithreaded:
             for mask in mask_files:
                 jobs.extend(importDataset(mask, root))
-                bar()
             else:
                 with ThreadPoolExecutor() as executor:
                     futures = [

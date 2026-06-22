@@ -22,8 +22,8 @@ class Overlay():
             alpha: Transparency value 0-1.
         Returns: Background image with overlay image overlaid.
         """
-        bg: Image.Image = Image.fromarray(background).convert("RGBA")
-        ov: Image.Image = Image.fromarray(overlay).convert("RGBA")
+        bg: Image.Image = Image.fromarray(background).convert()
+        ov: Image.Image = Image.fromarray(overlay).convert()
 
         ov_array = np.array(ov)
         is_background = np.all(ov_array[..., :3] == 0, axis=-1)
