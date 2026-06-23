@@ -22,8 +22,8 @@ class Overlay():
             alpha: Transparency value 0-1.
         Returns: Background image with overlay image overlaid.
         """
-        bg: Image.Image = Image.fromarray(background).convert()
-        ov: Image.Image = Image.fromarray(overlay).convert()
+        bg: Image.Image = Image.fromarray(background).convert("RGB")
+        ov: Image.Image = Image.fromarray(overlay).convert("RGBA")
 
         ov_array = np.array(ov)
         is_background = np.all(ov_array[..., :3] == 0, axis=-1)
@@ -131,11 +131,6 @@ class Overlay():
         output_dir.mkdir(parents=True, exist_ok=True)
 
         output_file = output_dir / f"{data.metadata.image_name}-{data.metadata.model_name}_accuracy_mask.tif"
-        fig.savefig(
-            fname=output_file,
-            bbox_inches="tight",
-            pad_inches=0,
-            dpi=1500
-        )
+        fig.savefig(fname=output_file, bbox_inches="tight", pad_inches=0)
 
         plt.close()

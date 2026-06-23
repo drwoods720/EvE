@@ -4,7 +4,6 @@ import numpy as np
 import numpy.typing as npt
 
 from dataclasses import dataclass, field
-from typing import Optional
 
 from src.datatypes import Cell, Metadata, Point, Results, SampleArea
 
@@ -25,7 +24,7 @@ class Comparison:
     points: list[Point]
     mask: npt.NDArray[np.uint16]
     sample_area: SampleArea
-    original_image: Optional[npt.NDArray[np.uint16]] = None
+    original_image: npt.NDArray[np.uint16] | None = None
     results: Results = field(default_factory=Results)
 
     def __post_init__(self) -> None:

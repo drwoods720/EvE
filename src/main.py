@@ -1,19 +1,36 @@
 #!/usr/bin/env python3
-
 import re
 import numpy as np
 import numpy.typing as npt
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-from PIL import Image
 from alive_progress import alive_bar
-
-import src.datatypes as dt
+from PIL import Image
+from functools import partial
 
 from src.parsers import points as pointsImporter
 from src.parsers import detections as cellImporter
 from src.parsers import sampleArea as sampleAreaImporter
+
+import src.processors as processors
+import src.outputs as outputs
+import src.datatypes as dt
+
+MAX_WORKERS: int = 5
+
+# Ordered list of processing steps that will be run on the data
+processing_pipeline = [
+    processors.CountPoints(),
+    processors.DetectClippingCells(),
+    processors.CalculateScore(),
+]
+
+# Ordered list of output steps that will be run on the data
+output_pipeline = [
+    outputs.ScoresCsv(),
+    outputs.Overlay(),
+]
 
 def importDataset(mask_file: Path, root: Path) -> list[dt.Comparison]:
     """
@@ -55,7 +72,7 @@ def importDataset(mask_file: Path, root: Path) -> list[dt.Comparison]:
         # Construct metadata
         metadata: dt.Metadata = dt.Metadata(image_name, model_name, points_file.name, mask_file.name)
 
-        # Construct and yield job
+        # Construct job
         jobs.append(dt.Comparison(
             metadata,
             cell_objects,
@@ -66,38 +83,23 @@ def importDataset(mask_file: Path, root: Path) -> list[dt.Comparison]:
 
     return jobs
 
-def importData(root_path: str, multithreaded: bool):
-    """
-    Creates a list of datasets from a directory of files.
+def processJob(mask_file: Path, root: Path) -> None:
+    # Build the job object(s)
+    datasets = importDataset(mask_file, root)
+    for data in datasets:
+        for process in processing_pipeline:
+            data = process.run(data)
 
-    Parameters:
-        root_path: Root path of the data files
-        multithreaded: Whether or not paralell processing should be enabled
-    """
+        for output in output_pipeline:
+            output.run(data)
 
-    root = Path(root_path)
+def run(root_path: str) -> None:
+    root: Path = Path(root_path)
 
-    jobs: list[dt.Comparison] = []
+    mask_filepaths: list[Path] = list(root.rglob("*.tif"))
 
-    # Find mask files (files ending in ".tif")
-    mask_files: list[Path] = list(root.rglob("*.tif"))
-
-    with alive_bar(len(mask_files), title="Importing files") as bar:
-        if not multithreaded:
-            for mask in mask_files:
-                jobs.extend(importDataset(mask, root))
-            else:
-                with ThreadPoolExecutor() as executor:
-                    futures = [
-                        executor.submit(importDataset, file, root)
-                        for file in mask_files
-                    ]
-
-                    for future in as_completed(futures):
-                        try:
-                            jobs.extend(future.result())
-                        except Exception as e:
-                            print("Failed to import dataset", e)
-                        finally:
-                            bar()
-    return jobs
+    with alive_bar(len(mask_filepaths), title="Processing Data") as bar:
+        with ProcessPoolExecutor(MAX_WORKERS) as pool:
+            job = partial(processJob, root=root)
+            for _ in pool.map(job, mask_filepaths):
+                bar()
