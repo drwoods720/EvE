@@ -131,6 +131,6 @@ class Overlay():
         output_dir.mkdir(parents=True, exist_ok=True)
 
         output_file = output_dir / f"{data.metadata.image_name}-{data.metadata.model_name}_accuracy_mask.tif"
-        fig.savefig(fname=output_file, bbox_inches="tight", pad_inches=0)
+        fig.savefig(fname=output_file, bbox_inches="tight", pad_inches=0, dpi=400)
 
-        plt.close()
+        plt.close("all")

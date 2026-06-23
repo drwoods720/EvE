@@ -17,7 +17,7 @@ import src.processors as processors
 import src.outputs as outputs
 import src.datatypes as dt
 
-MAX_WORKERS: int = 5
+MAX_WORKERS: int = 7
 
 # Ordered list of processing steps that will be run on the data
 processing_pipeline = [
@@ -43,9 +43,18 @@ def importDataset(mask_file: Path, root: Path) -> list[dt.Comparison]:
 
     jobs: list[dt.Comparison] = []
 
-    # Parse metadata from filename
-    image_name: str = mask_file.name.split(".")[0]
-    model_name: str = mask_file.name.split("_")[-2]
+    # Parse model info
+    mask_file_regex = re.compile(
+        r"(?P<image>.+?)\.ome\.tif\s*-\s*Image0\s*_?(?P<model>.+?)_label\.tif"
+    )
+
+    mask_file_regex_matches = mask_file_regex.search(mask_file.name)
+
+    if not mask_file_regex_matches:
+        raise ValueError(f"Unrecognized format: {mask_file.name}")
+
+    image_name = mask_file_regex_matches.group("image")
+    model_name = mask_file_regex_matches.group("model")
 
     # Parse data from mask
     cell_objects: dict[int, dt.Cell] = cellImporter.tif.parse(str(mask_file.absolute()))
