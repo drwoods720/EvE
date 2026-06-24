@@ -11,6 +11,7 @@ class Cell:
     Attributes:
         id: Cell ID. Matches with the cell label in segmentation mask.
         points: List of points that are located within the cell area.
+        clipping: If the cell is cutoff by the sample area border.
     """
     id: int
     points: list[Point] = field(default_factory=list)

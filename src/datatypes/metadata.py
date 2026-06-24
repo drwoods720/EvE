@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass
 from pandas import Timestamp
-import numpy as np
 import uuid
 
 @dataclass

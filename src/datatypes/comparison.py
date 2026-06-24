@@ -27,7 +27,7 @@ class Comparison:
     original_image: npt.NDArray[np.uint16] | None = None
     results: Results = field(default_factory=Results)
 
+    # Sets the original_image value to an all black image the same shape as the mask if none is provided.
     def __post_init__(self) -> None:
-        # Sets the original_image value to an all black image the same shape as the mask if none is provided.
         if self.original_image is None:
             self.original_image = np.zeros_like(self.mask)
