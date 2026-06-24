@@ -1,4 +1,4 @@
 1. Parse name of user who placed points - LOW URGENCY
 2. Add more detailed inline documentation - DOING
 3. Rename some modules / classes to be more clear - STARTED ON IT (Do this last)
-5. Change output directory - QOL LOW PRIORITY
+6. Migrate to mapcore github

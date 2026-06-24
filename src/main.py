@@ -95,17 +95,22 @@ def importDataset(mask_file: Path, root: Path) -> list[dt.Comparison]:
 def processJob(mask_file: Path, root: Path) -> None:
     # Build the job object(s)
     datasets = importDataset(mask_file, root)
+
+    output_directory: Path = Path(root.parent / "Results")
+
     for data in datasets:
         for process in processing_pipeline:
             data = process.run(data)
 
         for output in output_pipeline:
-            output.run(data)
+            output.run(data, output_directory)
 
 def run(root_path: str) -> None:
     root: Path = Path(root_path)
 
     mask_filepaths: list[Path] = list(root.rglob("*.tif"))
+    for filepath in mask_filepaths:
+        print(filepath)
 
     with alive_bar(len(mask_filepaths), title="Processing Data") as bar:
         with ProcessPoolExecutor(MAX_WORKERS) as pool:

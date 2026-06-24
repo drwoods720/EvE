@@ -69,7 +69,7 @@ class Overlay():
 
         return accuracy_mask
 
-    def run(self, data: dt.Comparison) -> None:
+    def run(self, data: dt.Comparison, output_directory: Path) -> None:
         """
         Creates and overlays an accuracy mask and points over the original image.
 
@@ -127,10 +127,9 @@ class Overlay():
         sample_border = patches.Rectangle((blx, bly), width, height, edgecolor='r', facecolor='none', linewidth=0.2)
         ax.add_patch(sample_border)
 
-        output_dir: Path = Path(f"outputs")
-        output_dir.mkdir(parents=True, exist_ok=True)
+        output_directory.mkdir(parents=True, exist_ok=True)
 
-        output_file = output_dir / f"{data.metadata.image_name}-{data.metadata.model_name}_accuracy_mask.tif"
+        output_file = output_directory/ f"{data.metadata.image_name}-{data.metadata.model_name}_accuracy_mask.tif"
         fig.savefig(fname=output_file, bbox_inches="tight", pad_inches=0, dpi=400)
 
         plt.close("all")

@@ -7,18 +7,17 @@ from pathlib import Path
 import src.datatypes as dt
 
 class ScoresCsv():
-    def run(self, data: dt.Comparison) -> None:
+    def run(self, data: dt.Comparison, output_directory: Path) -> None:
         """
         Outputs the results of one dataset to a csv file.
 
         Parameters:
             data: Dataset to save the results of.
         """
-        output_dir: Path = Path(f"outputs")
-        output_dir.mkdir(parents=True, exist_ok=True)
+        output_directory.mkdir(parents=True, exist_ok=True)
 
 
-        output_file = output_dir / "accuracy_scores.csv"
+        output_file = output_directory / "accuracy_scores.csv"
         output_row = {
             "Image Name": data.metadata.image_name,
             "Points File": data.metadata.points_file,
