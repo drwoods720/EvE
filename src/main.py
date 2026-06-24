@@ -3,7 +3,7 @@ import re
 import numpy as np
 import numpy.typing as npt
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 from alive_progress import alive_bar
 from PIL import Image

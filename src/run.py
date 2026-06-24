@@ -2,10 +2,6 @@
 
 import time
 
-from collections.abc import Iterable
-
-import src.datatypes as dt
-
 import src.main as main
 
 def run(path: str) -> None:

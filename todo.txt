@@ -1,4 +1,4 @@
-1. Parse name of user who placed points - LOW URGENCY (no format given yet... waiting)
-2. Add more detailed inline documentation - DOING <-
-3. Rename some modules / classes to be more clear - STARTED ON IT (Do this last)
-6. Migrate to mapcore github
+1. Add more detailed inline documentation - DOING <-
+2. Rename some modules / classes to be more clear - NEXT UP
+3. Migrate to mapcore github
+4. Parse name of user who placed points - LOW URGENCY (no format given yet... waiting)
