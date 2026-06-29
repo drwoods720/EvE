@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 
 from src.datatypes import Cell, Metadata, Point, Results, SampleArea
 
+
 @dataclass
 class Sample:
     """
@@ -19,6 +20,7 @@ class Sample:
         mask: Labeled cell mask to assess.
         original_image: (Optional) Image the mask was generated for.
     """
+
     metadata: Metadata
     cells: dict[int, Cell]
     points: list[Point]

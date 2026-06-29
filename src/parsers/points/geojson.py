@@ -1,35 +1,36 @@
 #!/usr/bin/env python3
 
 import json
+from typing import override, Any
 
 import src.datatypes as dt
+from src.parsers.parser import Parser
 
-def parse(filepath: str) -> list[dt.Point]:
-    """
-    Generates a list of point objects from a geojson file.
+class Geojson(Parser[list[dt.Point]]):
+    @override
+    def parse(self, filepath: str) -> list[dt.Point]:
+        """
+        Generates a list of point objects from a geojson file.
 
-    Parameters:
-        filepath: Path to the geojson file.
-    Returns: A list of point objects
-    """
-    # Declare points list
-    points: list[dt.Point] = []
+        Parameters:
+        filepath: Path to the geojson file to parse.
+        Returns: A list of point objects.
+        """
 
-    # Load in json data
-    json_data = []
-    with open(filepath, 'r') as f:
-        json_data = json.load(f)
+        points: list[dt.Point] = []
 
+        json_data: list[Any] = []
+        with open(filepath, "r") as f:
+            json_data = json.load(f)
 
-    # Find the correct feature
-    for feature in json_data:
-        if feature["geometry"]["type"] == "MultiPoint":
-            for point in feature["geometry"]["coordinates"]:
-                point_x: int = int(point[0])
-                point_y: int = int(point[1])
+        for feature in json_data:
+            if feature["geometry"]["type"] == "MultiPoint":
+                for point_entry in feature["geometry"]["coordinates"]:
+                    point_x: int = int(point_entry[0])
+                    point_y: int = int(point_entry[1])
 
-                point: dt.Point = dt.Point(point_x, point_y)
+                    point: dt.Point = dt.Point(point_x, point_y)
 
-                points.append(point)
+                    points.append(point)
 
-    return points
+        return points

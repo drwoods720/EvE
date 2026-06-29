@@ -5,8 +5,10 @@ import csv
 from pathlib import Path
 
 import src.datatypes as dt
+from src.outputs.output import Output
 
-class ScoresCsv():
+
+class ScoresCsv(Output):
     def run(self, data: dt.Sample, output_directory: Path) -> None:
         """
         Outputs the results of one dataset to a csv file.
@@ -15,7 +17,6 @@ class ScoresCsv():
             data: Dataset to save the results of.
         """
         output_directory.mkdir(parents=True, exist_ok=True)
-
 
         output_file = output_directory / "accuracy_scores.csv"
         output_row = {
@@ -28,12 +29,11 @@ class ScoresCsv():
             "False Positives": data.results.falsePositive,
             "Precision": data.results.precision,
             "Recall": data.results.recall,
-            "F1": data.results.f1
+            "F1": data.results.f1,
         }
-        #print(f"Precision: {data.results.precision}")
-        #print(f"Recall: {data.results.recall}")
-        #print(f"F1: {data.results.f1}")
-
+        # print(f"Precision: {data.results.precision}")
+        # print(f"Recall: {data.results.recall}")
+        # print(f"F1: {data.results.f1}")
 
         file_exists: bool = Path(output_file).exists()
 

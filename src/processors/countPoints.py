@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import src.datatypes as dt
+from src.processors.processor import Process
 
-class CountPoints():
+
+class CountPoints(Process):
     def run(self, data: dt.Sample) -> dt.Sample:
         """
         Determines which cell a point is in and how many points are in each cell.

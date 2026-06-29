@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-import numpy as np
-
 import src.datatypes as dt
+from src.processors.processor import Process
 
-class DetectClippingCells():
+
+class DetectClippingCells(Process):
     def run(self, data: dt.Sample) -> dt.Sample:
         """
         Detects all cells that are cut off by the sample area.
@@ -22,20 +22,20 @@ class DetectClippingCells():
 
         edges = []
         # Original edge pixels (on the boundary)
-        edges.append(data.mask[ymin, xmin:xmax+1])
-        edges.append(data.mask[ymax, xmin:xmax+1])
+        edges.append(data.mask[ymin, xmin : xmax + 1])
+        edges.append(data.mask[ymax, xmin : xmax + 1])
         edges.append(data.mask[ymin:ymax, xmin])
         edges.append(data.mask[ymin:ymax, xmax])
 
         # Pixels behind the clipping line (outside the sample area)
         if ymin > 0:
-            edges.append(data.mask[:ymin, xmin:xmax+1])          # above
+            edges.append(data.mask[:ymin, xmin : xmax + 1])  # above
         if ymax < mask_height - 1:
-            edges.append(data.mask[ymax+1:, xmin:xmax+1])        # below
+            edges.append(data.mask[ymax + 1 :, xmin : xmax + 1])  # below
         if xmin > 0:
-            edges.append(data.mask[ymin:ymax, :xmin])            # left
+            edges.append(data.mask[ymin:ymax, :xmin])  # left
         if xmax < mask_width - 1:
-            edges.append(data.mask[ymin:ymax, xmax+1:])          # right
+            edges.append(data.mask[ymin:ymax, xmax + 1 :])  # right
 
         clipping_cells: list[int] = []
         for edge in edges:

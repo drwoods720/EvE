@@ -1,136 +1,168 @@
 #!/usr/bin/env python3
+"""
+Main entry point for the cell scoring pipeline.
+
+Discovers mask files under a given directory, pairs them with their
+associated point annotation files, runs each sample through a
+configurable processing pipeline, and writes results to an output
+directory.
+"""
+
 import re
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
+from pathlib import Path
+
 import numpy as np
 import numpy.typing as npt
-
-from concurrent.futures import ProcessPoolExecutor
-from pathlib import Path
 from alive_progress import alive_bar
 from PIL import Image
-from functools import partial
 
-from src.parsers import points as pointsImporter
-from src.parsers import detections as cellImporter
-from src.parsers import sampleArea as sampleAreaImporter
-
-import src.processors as processors
-import src.outputs as outputs
 import src.datatypes as dt
+import src.outputs as outputs
+import src.processors as processors
+import src.parsers as parsers
+from src.outputs.output import Output
+from src.processors.processor import Process
 
-# Ordered list of processing steps that will be run on the data
-processing_pipeline = [
+# Ordered sequence of processing steps applied to each sample.
+PROCESSING_PIPELINE: tuple[Process, ...] = (
     processors.CountPoints(),
     processors.DetectClippingCells(),
     processors.CalculateScore(),
-]
+)
 
-# Ordered list of output steps that will be run on the data
-output_pipeline = [
+# Ordered sequence of output steps run after all processing is complete.
+OUTPUT_PIPELINE: tuple[Output, ...] = (
     outputs.ScoresCsv(),
     outputs.Overlay(),
-]
+)
 
-def importDataset(mask_file: Path, root: Path) -> list[dt.Sample]:
+
+def import_dataset(mask_file: Path, root: Path) -> list[dt.Sample]:
     """
-    Imports and creates all possible datasets associated with a mask file.
+    Build Sample objects for a single mask file.
 
-    Parameters:
-        mask_file: Mask file to use in dataset
-        root: The path to look in for data to import
-    Returns: A list of import dataset objects
+    Parses the image and model names from the mask filename, loads cell
+    detections and the mask array from that file, then searches ``root``
+    recursively for every GeoJSON point annotation file that belongs to
+    the same image. One Sample is created per matching GeoJSON file.
+
+    :param mask_file: Path to the mask ``.tif`` file to import.
+    :param root: Directory to search for associated GeoJSON annotation files.
+    :return: A list of Sample objects, one per matched annotation file.
+    :raises ValueError: If ``mask_file`` does not match the expected naming
+        convention.
     """
-
     jobs: list[dt.Sample] = []
 
-    # Parse model info
+    # Extract the image name and model name from the mask filename.
     mask_file_regex = re.compile(
         r"(?P<image>.+?)\.ome\.tif\s*-\s*Image\d*\s*_?(?P<model>.+?)_label\.tif"
     )
+    match = mask_file_regex.search(mask_file.name)
 
-    mask_file_regex_matches = mask_file_regex.search(mask_file.name)
+    if not match:
+        raise ValueError(
+            f"Mask filename does not match expected format: {mask_file.name}"
+        )
 
-    if not mask_file_regex_matches:
-        raise ValueError(f"Unrecognized format: {mask_file.name}")
+    image_name = match.group("image")
+    model_name = match.group("model")
 
-    image_name = mask_file_regex_matches.group("image")
-    model_name = mask_file_regex_matches.group("model")
+    # Load cell detection objects and the raw mask array from the mask file.
+    cell_objects: dict[int, dt.Cell] = parsers.cells.Tif().parse(str(mask_file.absolute()))
+    mask_array: npt.NDArray[np.uint16] = np.array(
+        Image.open(str(mask_file.absolute())), dtype="uint16"
+    )
 
-    # Parse data from mask
-    cell_objects: dict[int, dt.Cell] = cellImporter.tif.parse(str(mask_file.absolute()))
-    mask_array: npt.NDArray[np.uint16] = np.array(Image.open(str(mask_file.absolute())), dtype="uint16")
-
-    # Find all points files associated with mask
+    # Find all GeoJSON annotation files in ``root`` for this image.
     points_file_regex = re.compile(
         rf"^{re.escape(image_name)}\.ome\.tif - Image\d*\.geojson$"
     )
-
     points_files = [
-        p for p in root.rglob("*.geojson")
+        p
+        for p in root.rglob("*.geojson")
         if p.is_file() and points_file_regex.match(p.name)
     ]
 
-    # Each points file
     for points_file in points_files:
         filepath: str = str(points_file.absolute())
 
-        # Parse data from geojson file
-        sample_area: dt.SampleArea = sampleAreaImporter.geojson.parse(filepath)
-        points: list[dt.Point] = pointsImporter.geojson.parse(filepath)
+        sample_area: dt.SampleArea = parsers.sampleArea.Geojson().parse(filepath)
+        points: list[dt.Point] = parsers.points.Geojson().parse(filepath)
 
-        # Construct metadata
-        metadata: dt.Metadata = dt.Metadata(image_name, model_name, points_file.name, mask_file.name)
+        metadata: dt.Metadata = dt.Metadata(
+            image_name, model_name, points_file.name, mask_file.name
+        )
 
-        # Construct job
-        jobs.append(dt.Sample(
-            metadata=metadata,
-            cells=cell_objects,
-            points=points,
-            mask=mask_array,
-            sample_area=sample_area
-        ))
+        jobs.append(
+            dt.Sample(
+                metadata=metadata,
+                cells=cell_objects,
+                points=points,
+                mask=mask_array,
+                sample_area=sample_area,
+            )
+        )
 
     return jobs
 
-def processJob(mask_file: Path, root: Path, output_directory: Path) -> None:
-    """
-    Fully imports and processes one job.
 
-    Parameters:
-        mask_file: Mask file to process
-        root: Path to where files should be imported from
-        output_directory: Path to where output files should be stored
+def process_sample(
+    mask_file: Path,
+    root: Path,
+    output_directory: Path,
+) -> None:
     """
-    # Build the job object(s)
-    datasets: list[dt.Sample] = importDataset(mask_file, root)
+    Import, process, and write results for a single mask file.
+
+    Imports all Samples associated with ``mask_file``, runs each through
+    every step in ``PROCESSING_PIPELINE``, then passes the result to
+    every step in ``OUTPUT_PIPELINE``.
+
+    :param mask_file: Path to the mask ``.tif`` file to process.
+    :param root: Directory to search for associated annotation files.
+    :param output_directory: Directory where output files will be written.
+    """
+    datasets: list[dt.Sample] = import_dataset(mask_file, root)
 
     for data in datasets:
-        for process in processing_pipeline:
+        for process in PROCESSING_PIPELINE:
             data = process.run(data)
 
-        for output in output_pipeline:
+        for output in OUTPUT_PIPELINE:
             output.run(data, output_directory)
 
-def run(root_dir: str, output_dir: str | None = None, max_workers: int = 4) -> None:
-    """
-    Run the program
 
-    Parameters:
-        root_dir: Path to where to look for file when importing
-        output_dir: Path to where output files should be stored
+def run(
+    root_dir: str,
+    output_dir: str | None = None,
+    max_workers: int = 4,
+) -> None:
     """
-    root_path: Path = Path(root_dir)
+    Discover mask files and run the full processing pipeline.
+
+    Searches ``root_dir`` recursively for ``.tif`` mask files and
+    processes each one in parallel. Results are written to ``output_dir``
+    if provided, otherwise to a ``Results/`` directory placed alongside
+    ``root_dir``.
+
+    :param root_dir: Root directory to search for ``.tif`` mask files.
+    :param output_dir: Directory for output files. Defaults to a
+        ``Results/`` folder next to ``root_dir``.
+    :param max_workers: Maximum number of parallel worker processes.
+    """
+    root_path = Path(root_dir)
 
     print(f"Workers: {max_workers}")
 
-    output_path: Path = Path(root_path.parent / "Results")
-    if output_dir:
-        output_path = Path(output_dir)
-
+    output_path = Path(output_dir) if output_dir else root_path.parent / "Results"
 
     mask_filepaths: list[Path] = list(root_path.rglob("*.tif"))
 
     with alive_bar(len(mask_filepaths), title="Processing Data") as bar:
         with ProcessPoolExecutor(max_workers) as pool:
-            job = partial(processJob, root=root_path, output_directory=output_path)
+            job = partial(process_sample, root=root_path, output_directory=output_path)
             for _ in pool.map(job, mask_filepaths):
                 bar()

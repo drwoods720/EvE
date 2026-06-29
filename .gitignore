@@ -10,4 +10,5 @@ htmlcov
 /venv
 /test*
 /outputs
+/.ruff_cache
 *.sif

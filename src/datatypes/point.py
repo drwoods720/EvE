@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 
+
 @dataclass
 class Point:
     """
@@ -12,6 +13,7 @@ class Point:
         y: y coordinate of point
         cell: ID of the cell the point is located in. 0 means it isn't located in a cell region.
     """
+
     x: int
     y: int
     cell: int = 0

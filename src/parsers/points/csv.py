@@ -1,26 +1,33 @@
 #!/usr/bin/env python3
 
-import src.datatypes as dt
+from typing import override
+
 import pandas as pd
 
-def parse(filepath: str) -> list[dt.Point]:
-    """
-    Generates a list of point objects from a csv file.
+import src.datatypes as dt
+from src.parsers.parser import Parser
 
-    Parameters:
+class Csv(Parser[list[dt.Point]]):
+    @override
+    def parse(self, filepath: str) -> list[dt.Point]:
+        """
+        Generates a list of point objects from a csv file.
+
+        Parameters:
         filepath: Path to the csv file to parse.
-    Returns: A list of point objects.
-    """
-    points: list[dt.Point] = []
+        Returns: A list of point objects.
+        """
 
-    dataframe = pd.read_csv(filepath)
+        points: list[dt.Point] = []
 
-    for index, data in dataframe.iterrows():
-        point_x: int = int(data["x"])
-        point_y: int = int(data["y"])
+        dataframe: pd.DataFrame = pd.read_csv(filepath)
 
-        point = dt.Point(point_x, point_y)
+        for _, data in dataframe.iterrows():
+            point_x: int = int(data["x"])
+            point_y: int = int(data["y"])
 
-        points.append(point)
+            point = dt.Point(point_x, point_y)
 
-    return points
+            points.append(point)
+
+        return points

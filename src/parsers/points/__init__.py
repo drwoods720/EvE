@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-from .tsv import parse
-from .csv import parse
-from .geojson import parse
+from .csv import Csv
+from .tsv import Tsv
+from .geojson import Geojson
 
-#__all__ = [
-#    "tsv",
-#    "csv",
-#]
+__all__ = [
+    "Csv",
+    "Tsv",
+    "Geojson",
+]

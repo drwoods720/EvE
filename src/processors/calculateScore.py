@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import src.datatypes as dt
+from src.processors.processor import Process
 
-class CalculateScore():
+
+class CalculateScore(Process):
     def run(self, data: dt.Sample) -> dt.Sample:
         """
         Calculates the scoring metrics from a specific dataset.
@@ -38,10 +40,8 @@ class CalculateScore():
 
             data.results.precision = round(tp / (tp + fp) if (tp + fp) > 0 else 0.0, 3)
             data.results.recall = round(tp / (tp + fn) if (tp + fn) > 0 else 0.0, 3)
-            data.results.f1 = round((
-                2 * tp / (2 * tp + fp + fn)
-                if (2 * tp + fp + fn) > 0
-                else 0.0
-            ), 3)
+            data.results.f1 = round(
+                (2 * tp / (2 * tp + fp + fn) if (2 * tp + fp + fn) > 0 else 0.0), 3
+            )
 
         return data
