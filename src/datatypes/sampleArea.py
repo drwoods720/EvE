@@ -15,6 +15,7 @@ class SampleArea:
         ymax: Maximum y value inside the sample area
         ymin: Minimum x value inside the sample area
     """
+
     xmax: int
     xmin: int
 

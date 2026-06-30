@@ -164,14 +164,12 @@ def run(
 
     print(f"Workers: {max_workers}")
 
-    output_path = Path(
-        output_dir) if output_dir else root_path.parent / "Results"
+    output_path = Path(output_dir) if output_dir else root_path.parent / "Results"
 
     mask_filepaths: list[Path] = list(root_path.rglob("*.tif"))
 
     with alive_bar(len(mask_filepaths), title="Processing Data") as bar:
         with ProcessPoolExecutor(max_workers) as pool:
-            job = partial(process_sample, root=root_path,
-                          output_directory=output_path)
+            job = partial(process_sample, root=root_path, output_directory=output_path)
             for _ in pool.map(job, mask_filepaths):
                 bar()
