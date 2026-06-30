@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+cell.py
+
+Defines the :class:`Cell` dataclass, which represents a single
+segmented cell region extracted from a segmentation mask.
+"""
 
 from dataclasses import dataclass, field
 from .point import Point
@@ -7,12 +13,24 @@ from .point import Point
 @dataclass
 class Cell:
     """
-    Represents one cell region in the segmentation mask.
+    Represent a single cell region within a segmentation mask.
 
-    Attributes:
-        id: Cell ID. Matches with the cell label in segmentation mask.
-        points: List of points that are located within the cell area.
-        clipping: If the cell is cutoff by the sample area border.
+    A :class:`Cell` groups all :class:`~.point.Point` instances
+    that fall within its boundary, along with metadata describing
+    the cell's identity and whether it lies on the edge of the
+    sampled area.
+
+    :ivar id: The cell's identifier. Corresponds to the integer label
+        assigned to this cell in the segmentation mask.
+    :vartype id: int
+
+    :ivar points: The points located within the cell's area.
+        Defaults to an empty list if none are provided.
+    :vartype points: list[Point]
+
+    :ivar clipping: Whether the cell is clipped (cut off) by the
+        border of the sample area. Defaults to ``False``.
+    :vartype clipping: bool
     """
 
     id: int

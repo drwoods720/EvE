@@ -1,5 +1,22 @@
 #!/usr/bin/env python3
 
+"""
+eve.py
+
+Comand-line interface for the EvE program.
+
+This module parses command-line arguments, preforms basic input
+validation, and delegates the actual processing work to
+:func:'src.main.run'.
+
+:Usage:
+
+.. code-block:: console
+
+    $ python eve.py -i /path/to/input -o /path/to/output -w 4
+
+"""
+
 import os
 import argparse
 from typing import Any
@@ -20,7 +37,28 @@ Please put on your 3d glasses now.
 
 def eve() -> None:
     """
-    The user interface for the eve program.
+    Run the command-line interface for the EvE program.
+
+    Parses command-line arguments, validates the provided input
+    directory exists, builds the argument dictionary, and invokes
+    :func:'src.main.run'.
+
+    :param -i, --input: Path to the input directory containing
+        the data/models to evaluate. **Required.**
+    :type -i, --input: str
+
+    :param -o, --output: Path to the output directory where results
+        will be written. Optional; if not specified the default behavior
+        of :func:'src.main.run' is used.
+    :type -o, --output: str
+
+    :param -w, --workers: Maximum number of parallel processes to use.
+        Optional; if not specified the default behavior of :func:'src.main.run'
+        is used.
+    :type -w, --workers: int
+
+    :raises SystemExit: If no input directory is provided, or if the provided directory
+        does not exist on disk. In both cases the program will exit.
     """
     parser = argparse.ArgumentParser(description="(EvE)aluates Various modEls")
 

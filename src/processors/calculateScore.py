@@ -27,16 +27,16 @@ class CalculateScore(Process):
             point_count: int = len(cell.points)
 
             if point_count < 1:
-                data.results.falsePositive += 1
+                data.results.false_positive += 1
             elif point_count == 1:
-                data.results.truePositive += 1
+                data.results.true_positive += 1
             elif point_count > 1:
-                data.results.truePositive += 1
-                data.results.falseNegative += point_count - 1
+                data.results.true_positive += 1
+                data.results.false_negative += point_count - 1
 
-            tp: int = data.results.truePositive
-            fp: int = data.results.falsePositive
-            fn: int = data.results.falseNegative
+            tp: int = data.results.true_positive
+            fp: int = data.results.false_positive
+            fn: int = data.results.false_negative
 
             data.results.precision = round(tp / (tp + fp) if (tp + fp) > 0 else 0.0, 3)
             data.results.recall = round(tp / (tp + fn) if (tp + fn) > 0 else 0.0, 3)

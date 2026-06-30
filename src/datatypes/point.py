@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+point.py
+
+Defines the :class:`Point` dataclass, which represents a single
+manually placed point and its associated cell membership.
+"""
 
 from dataclasses import dataclass
 
@@ -6,12 +12,21 @@ from dataclasses import dataclass
 @dataclass
 class Point:
     """
-    Represents a single manually placed point.
+    Represent a single manually placed point.
 
-    Attributes:
-        x: x coordinate of point
-        y: y coordinate of point
-        cell: ID of the cell the point is located in. 0 means it isn't located in a cell region.
+    A :class:`Point` records a coordinate location along with a
+    reference to the cell region it falls within, if any.
+
+    :ivar x: The x coordinate of the point.
+    :vartype x: int
+
+    :ivar y: The y coordinate of the point.
+    :vartype y: int
+
+    :ivar cell: The ID of the :class:`~.cell.Cell` the point
+        is located in. A value of ``0`` indicates the point does not
+        fall within any cell region.
+    :vartype cell: int
     """
 
     x: int

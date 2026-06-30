@@ -4,7 +4,7 @@ from .metadata import Metadata
 from .cell import Cell
 from .point import Point
 from .results import Results
-from .sampleArea import SampleArea
+from .sample_area import SampleArea
 from .sample import Sample
 
 __all__ = [
