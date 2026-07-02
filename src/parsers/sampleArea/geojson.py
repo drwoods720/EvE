@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+geojson.py
+
+Defines the :class:`Geojson`, which reads a GeoJSON
+file and parses it into a :class:`~.datatypes.SampleArea`.
+"""
 
 import json
 from random import sample
@@ -9,14 +15,24 @@ from src.parsers.parser import Parser
 
 
 class Geojson(Parser[dt.SampleArea]):
+    """
+    Parse sample area bounds from a GeoJSON file.
+
+    Reads a QuPath exported GeoJSON file and extracts the
+    sample area bounds into a :class:`~.datatypes.SampleArea`
+    instance.
+    """
 
     def parse_sample_area(self, json_data: list[Any]) -> dt.SampleArea:
         """
-        Extracts the sample area data from geojson data.
+        Extract the sample area data from parsed GeoJSON data.
 
-        Parameters:
-        json_data: The raw json data to parse.
-        Returns: The sample area.
+        :param json_data: The raw GeoJSON data to extract
+            the sample area from.
+        :type json_data: list[Any]
+
+        :returns: The extracted sample area.
+        :rtype: ~.datatypes.SampleArea
         """
 
         sample_area: dt.SampleArea | None = None
@@ -53,11 +69,16 @@ class Geojson(Parser[dt.SampleArea]):
     @override
     def parse(self, filepath: str) -> dt.SampleArea:
         """
-        Read the sample area data from a geojson file.
+        Read and parse the sample area from a GeoJSON file.
 
-        Parameters:
-        filepath: Path to the geojson file.
-        Returns: Sample area.
+        Reads the file at ``filepath`` and delegates it to
+        :meth:`parse_sample_area` to extract the sample area bounds.
+
+        :param filepath: The path to the GeoJSON file.
+        :type filepath: str
+
+        :returns: The parsed sample area.
+        :rtype: ~.datatypes.SampleArea
         """
 
         json_data: list[Any] = []

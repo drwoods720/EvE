@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""
+tsv.py
+
+Defines the :class:`Tsv`, which reads a TSV file and
+parses it into a list of :class:`~.datatypes.Point` objects.
+"""
 
 from typing import override
 
@@ -9,15 +15,28 @@ from src.parsers.parser import Parser
 
 
 class Tsv(Parser[list[dt.Point]]):
+    """
+    Parse point objects from a TSV file.
+
+    Reads a TSV file containing manually placed point coordinates
+    and builds a :class:`~.datatypes.Point` object for each row.
+    """
+
     @override
     def parse(self, filepath: str) -> list[dt.Point]:
         """
-        Generates a list of point objects from a tsv file.
+        Generate point objects from a TSV file.
 
-        Parameters:
-        filepath: Path to the tsv file to parse.
-        Returns: A list of point objects.
+        Reads the TSV file at ``filepath`` and builds a
+        :class:`~.datatypes.Point` object for each row it contains.
+
+        :param filepath: The path to the TSV file to parse.
+        :type filepath: str
+
+        :returns: A list of point objects parsed from the file.
+        :rtype: list[~.datatypes.Point]
         """
+
         points: list[dt.Point] = []
 
         dataframe: pd.DataFrame = pd.read_csv(filepath, sep="\t")
