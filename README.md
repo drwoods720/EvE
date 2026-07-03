@@ -3,7 +3,7 @@
 ## Option 1: Run using the Apptainer container (recommended)
 
 ### Prerequisites
-- Apptainer (EvE was developed and tested on version 1.5.3)
+- Apptainer 1.5+
   
 ### Getting the container
 
@@ -47,7 +47,7 @@ cd EvE
 python3 -m venv .venv
 source .venv/bin/activate
 ```
-### Install dependancies
+### Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -56,34 +56,27 @@ pip install -r requirements.txt
 python eve.py --help
 ```
 
-# Running
-After installation, running EvE is straightforward.
-1. **Input Directory** Place all files to process in a dedicated input directory. Import is done by file name so any directory structure is fine.
-2. **Output Directory** Create a directory for the outputted files. If no output directory is specified one will be created alongside the input directory.
-3. **Run EvE** with the following command:
+# Usage
 
-`python eve.py -i [your input directory] -o [your output directory]`
+Running EvE can be done directly with python or using the Apptainer container.
 
-Optionally, use the '-w' flag to set the number of parallel workers. If unset the default is 4.
+## Apptainer container
 
-# Auto Importer
-The importer works by first looking for all files ending in ".tif"
+Basic usage:
+``` bash
+apptainer run eve.sif -i [/path/to/input] -o [/path/to/output]
+```
 
-Then finds all annotation files ending in .geojson containing the same image name
-
-## Mask File
-Mask files should follow this naming pattern:
-
-`[image name].ome.tif - Image[optional number]_[model name]_label.tif`
-
-## Annotations File
-Annotation files should follow this naming pattern:
-
-`[image name].ome.tif - Image[optional number].geojson`
-
+## Options
+| Argument | Description |
+|----------|-------------|
+| `-h` or `--help` | Show the help message and exit. |
+| `-i` or `--input` | **Required** Specify the input directory. |
+| `-o` or `--output` | Specify the output directory. |
+| `-w` or `--workers` | Specify the maximum number of parallel processors. |
 
 Future of this document:
-1. How to install
+1. How to install (done)
 2. How to run
 3. What inputs it takes
 4. What outputs it gives
