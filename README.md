@@ -13,7 +13,6 @@ Outputs are written to a specified output directory.
 If no output directory is specified outputs will be written to a directory alongside
 the input directory.
 
-EvE produces 2 outputs:
 
 # Installing
 
