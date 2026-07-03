@@ -6,4 +6,3 @@ EvE
 
    eve
    src
-   test
