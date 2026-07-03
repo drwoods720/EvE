@@ -9,7 +9,8 @@ for parsing a file at a given path into some parsed result type.
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-R = TypeVar("R")  #: The type of the parsed result returned by :meth:`Parser.parse`.
+#: The type of the parsed result returned by :meth:`Parser.parse`.
+R = TypeVar("R")
 
 
 class Parser(ABC, Generic[R]):

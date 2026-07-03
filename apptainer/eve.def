@@ -1,14 +1,25 @@
 Bootstrap: docker
 From: python:3.14.3
 
+%labels
+    Author Dylan Woods
+    Application EvE
+    Version 0.3.1
+
 %files
-    ../src /app/src
-    ../eve.py /app
-    ../requirements.txt /app
+    ../src /opt/eve/src
+    ../README.md /opt/eve
+    ../LICENSE /opt/eve
+    ../requirements.txt /opt/eve
+    ../eve.py /opt/eve
+
+%environment
+    export PATH=/opt/eve:$PATH
+    export PYTHONUNBUFFERED=1
 
 %post
-    pip install --upgrade pip
-    pip install -r /app/requirements.txt
+    pip install --no-cache-dir -r /opt/eve/requirements.txt
 
 %runscript
-    exec python3 /app/eve.py "$@"
+    cd /opt/eve
+    exec python eve.py "$@"

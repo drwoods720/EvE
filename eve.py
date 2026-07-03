@@ -63,7 +63,8 @@ def eve() -> None:
     parser = argparse.ArgumentParser(description="(EvE)aluates Various modEls")
 
     _ = parser.add_argument("-i", "--input", type=str, help="input directory")
-    _ = parser.add_argument("-o", "--output", type=str, help="output directory")
+    _ = parser.add_argument("-o", "--output", type=str,
+                            help="output directory")
     _ = parser.add_argument(
         "-w", "--workers", type=int, help="maximum number of parallel processes"
     )

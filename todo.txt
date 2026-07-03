@@ -1,6 +1,3 @@
 1. dockerize (no acually apptainerize!)
-2. Linting / fomatting - Used ruff and black
-3. API documentation - DONE FOR NOW (Finally!)
-4. Start work on user documentation - HIGH (Not even close to done)
-5. Migrate to mapcore github - DO AFTER CLEANING
-6. Casing (camel vs snake?)
+2. Start work on user documentation - HIGH (Not even close to done)
+3. Migrate to mapcore github - DO AFTER CLEANING

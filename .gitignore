@@ -11,3 +11,4 @@ htmlcov
 /outputs
 /.ruff_cache
 *.sif
+*.sandbox/
