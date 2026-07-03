@@ -24,5 +24,4 @@ class Output(ABC):
     """
 
     @abstractmethod
-    def run(self, data: dt.Sample, output_directory: Path) -> None:
-        ...
+    def run(self, data: dt.Sample, output_directory: Path) -> None: ...
