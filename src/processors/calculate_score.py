@@ -37,7 +37,7 @@ class CalculateScore(Process):
         # Count false negatives
         for point in data.points:
             if point.cell < 1:
-                data.results.falseNegative += 1
+                data.results.false_negative += 1
 
         for cell in data.cells.values():
             if cell.clipping:
