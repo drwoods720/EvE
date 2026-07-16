@@ -50,6 +50,7 @@ def import_dataset(mask_file: Path, root: Path, sample_area_padding: int) -> lis
 
     :param mask_file: Path to the mask ``.tif`` file to import.
     :param root: Directory to search for associated GeoJSON annotation files.
+    :param sample_area_padding: Amount to shrink the sample border by.
     :return: A list of Sample objects, one per matched annotation file.
     :raises ValueError: If ``mask_file`` does not match the expected naming
         convention.
@@ -160,6 +161,9 @@ def run(
     :param root_dir: Root directory to search for ``.tif`` mask files.
     :param output_dir: Directory for output files. Defaults to a
         ``Results/`` folder next to ``root_dir``.
+
+    :param sample_area_padding: Amount to shrink the sample border by.
+
     :param max_workers: Maximum number of parallel worker processes.
     """
     root_path = Path(root_dir)

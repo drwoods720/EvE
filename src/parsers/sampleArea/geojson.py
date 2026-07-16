@@ -33,6 +33,9 @@ class Geojson(Parser[dt.SampleArea]):
             the sample area from.
         :type json_data: list[Any]
 
+        :param sample_area_padding: Amount to shrink the sample border by.
+        :type sample_area_padding: int
+
         :returns: The extracted sample area.
         :rtype: ~.datatypes.SampleArea
         """

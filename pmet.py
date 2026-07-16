@@ -57,7 +57,7 @@ def pmet() -> None:
         is used.
     :type -w, --workers: int
 
-    :param -p, --padding: Padding
+    :param -p, --padding: Number of pixels to shrink the sample border by.
     :type -p, --padding: int
 
     :raises SystemExit: If no input directory is provided, or if the provided directory
@@ -72,7 +72,7 @@ def pmet() -> None:
         "-w", "--workers", type=int, help="maximum number of parallel processes"
     )
     _ = parser.add_argument(
-        "-p", "--padding", type=int, help="number of pixels to move the sample area in by"
+        "-p", "--padding", type=int, help="Number of pixels to shrink the sample border by"
     )
 
     # Hidden cheat code argument
