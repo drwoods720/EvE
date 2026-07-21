@@ -147,7 +147,7 @@ ground-truth points to compute accuracy.
 
 ### Getting the container
 
-**Download pre-built:** grab the `.sif` file from [Releases](https://github.com/drwoods720/pmet/releases).
+**Download pre-built:** grab the `.sif` file from [Releases](https://github.com/GPEC/pmet/releases).
 
 **Or build locally:**
 ```bash
