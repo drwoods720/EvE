@@ -22,6 +22,7 @@ import argparse
 from typing import Any
 
 import src.main as main
+import src.importer as importer
 
 TITLE: str = r"""
   ____  __  __   _____ _____
@@ -122,7 +123,8 @@ def pmet() -> None:
         print("Please check your parameters and try again.")
         exit()
 
-    main.run(**kwargs)
+    #main.run(**kwargs)
+    importer.import_samples(kwargs["root_dir"])
 
     print("Processing complete!")
     print("Thank you for using PMET, You can now take off your 3d glasses.")
